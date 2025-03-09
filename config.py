@@ -11,7 +11,7 @@ class Config:
         "DATABASE_URL", "postgresql://user:password@localhost:5432/sonic_sherlock"
     )
     # Sample rate for audio processing (Hz)
-    SAMPLE_RATE = 8000
+    SAMPLE_RATE = 44000
     # Frame length for FFT (samples)
     FFT_WINDOW_SIZE = 2048  # Reduced for faster processing
     # Hop length (samples)
