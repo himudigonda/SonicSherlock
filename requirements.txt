@@ -1,0 +1,11 @@
+psycopg2-binary 
+redis 
+joblib 
+multiprocess 
+fastapi 
+uvicorn 
+librosa 
+soundfile 
+python-dotenv 
+rich 
+sqlalchemy
