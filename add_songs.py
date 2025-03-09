@@ -4,6 +4,8 @@ import click
 from audio import processing
 from audio import fingerprinting
 from database.database_manager import DatabaseManager
+from database.models import Song
+from sqlalchemy import func
 from utils.logger import logger
 
 
@@ -43,6 +45,8 @@ def add_and_fingerprint_songs(songs_dir):
     """Adds songs from the specified directory to the database and fingerprints them."""
     logger.info(f"Adding and fingerprinting songs from directory: {songs_dir}")
     db_manager = DatabaseManager()
+    session = db_manager.Session()  # Get the session here
+
     song_files = [f for f in os.listdir(songs_dir) if f.endswith(".mp3")]
 
     if not song_files:
@@ -54,14 +58,36 @@ def add_and_fingerprint_songs(songs_dir):
         # Split the filename to extract the artist and song title
         file_path = os.path.join(songs_dir, song_file)
         artist, title = extract_artist_title(song_file)
+
         if artist and title:
             logger.info(f"Processing song: {title} - {artist}")
+
+            # Check if the song already exists in the database based on title and artist
+            existing_song = (
+                session.query(Song)
+                .filter(
+                    func.lower(Song.title) == title.lower(),
+                    func.lower(Song.artist) == artist.lower(),
+                )
+                .first()
+            )
+
+            if existing_song:
+                logger.info(
+                    f"Song '{title}' by '{artist}' already exists in the database with ID: {existing_song.id}. Skipping."
+                )
+                click.echo(
+                    f"Song '{title}' by '{artist}' already exists in the database. Skipping."
+                )
+                continue  # Skip to the next song
+
             # Add the song to the database
             song_id = db_manager.add_song(title, artist)
             if song_id:
                 logger.info(
                     f"Added song '{title}' by '{artist}' to the database with ID: {song_id}"
                 )
+
                 # Fingerprint the song
                 # Load the audio
                 audio, sr = processing.load_audio(file_path)
@@ -100,6 +126,7 @@ def add_and_fingerprint_songs(songs_dir):
                 f"Could not extract artist and title from filename: {song_file}"
             )
             click.echo(f"Could not extract artist and title from filename: {song_file}")
+    session.close()  # Close the session
 
 
 if __name__ == "__main__":

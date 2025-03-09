@@ -100,7 +100,7 @@ SonicSherlock consists of a FastAPI backend and a Gradio frontend.
 In a terminal, activate the virtual environment, navigate to the `sonic_sherlock` directory, and run:
 
 ```bash
-uvicorn sonic_sherlock.api.app:app --reload
+uvicorn api.app:app --reload
 ```
 
 The `--reload` flag restarts the server automatically when code changes are detected.
