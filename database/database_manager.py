@@ -67,6 +67,8 @@ class DatabaseManager:
         session = self.Session()
         try:
             for fingerprint_data in fingerprints:
+                # Convert 'offset' to a standard Python integer
+                fingerprint_data["offset"] = int(fingerprint_data["offset"])
                 fingerprint = Fingerprint(**fingerprint_data)
                 session.add(fingerprint)
             session.commit()
@@ -141,6 +143,3 @@ class DatabaseManager:
             return []
         finally:
             session.close()
-
-
-# Example Usage (moved to cli.py for proper context)

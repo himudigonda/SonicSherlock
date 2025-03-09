@@ -5,6 +5,7 @@ from scipy.ndimage import maximum_filter
 
 from config import config
 from utils.logger import logger
+import matplotlib.pyplot as plt
 
 
 def load_audio(file_path):
@@ -69,6 +70,18 @@ def create_spectrogram(audio):
             audio, n_fft=config.FFT_WINDOW_SIZE, hop_length=config.HOP_LENGTH
         )
         spectrogram_db = librosa.amplitude_to_db(np.abs(spectrogram), ref=np.max)
+
+        # Add visualization code here
+        plt.figure(figsize=(12, 4))
+        librosa.display.specshow(
+            spectrogram_db, sr=config.SAMPLE_RATE, x_axis="time", y_axis="hz"
+        )
+        plt.colorbar()
+        plt.title("Spectrogram")
+        plt.tight_layout()
+        plt.savefig("spectrogram.png")  # Save the spectrogram to a file
+        plt.close()  # Close the plot to free memory
+
         logger.debug(
             f"audio.processing.create_spectrogram :: Spectrogram created. Shape: {spectrogram_db.shape}"
         )
@@ -92,7 +105,7 @@ def extract_peaks(spectrogram):
     logger.debug("audio.processing.extract_peaks :: Extracting peaks from spectrogram")
     try:
         # Apply maximum filter to find local maxima
-        peaks = maximum_filter(spectrogram, size=10) == spectrogram
+        peaks = maximum_filter(spectrogram, size=config.MAX_FILTER_SIZE) == spectrogram
         # Get the indices of the peaks
         rows, cols = np.where(peaks)
         # Filter peaks based on the threshold

@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from config import DEBUG
+from config import DEBUG, config
 
 
 class Logger:
@@ -17,14 +17,20 @@ class Logger:
         )  # Use stdout for cleaner output
         stream_handler.setLevel(logging.DEBUG if DEBUG else logging.INFO)
 
+        # Create file handler
+        file_handler = logging.FileHandler(config.LOG_FILE)
+        file_handler.setLevel(logging.DEBUG if DEBUG else logging.INFO)
+
         # Create formatter and add it to handlers
         formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
         stream_handler.setFormatter(formatter)
+        file_handler.setFormatter(formatter)
 
         # Add handlers to the logger
         self.logger.addHandler(stream_handler)
+        self.logger.addHandler(file_handler)
 
     def debug(self, message):
         self.logger.debug(message)

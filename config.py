@@ -17,7 +17,10 @@ class Config:
     # Hop length (samples)
     HOP_LENGTH = 2048
     # Threshold for peak detection (dB)
-    PEAK_THRESHOLD = 10
+    PEAK_THRESHOLD = -20  # Increased sensitivity significantly
+    # Size of the maximum filter for peak detection
+    MAX_FILTER_SIZE = 7  # Increased sensitivity significantly
+
     # Target zone size for fingerprinting
     TARGET_ZONE_SIZE = 10
     # Number of parallel processes to use
@@ -26,6 +29,7 @@ class Config:
     MIN_HASHES = 5
     # Time to live for fingerprint caching
     FINGERPRINT_CACHE_TTL = 60 * 60  # 1 hour
+    LOG_FILE = "log"
 
 
 config = Config()
