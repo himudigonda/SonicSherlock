@@ -1,7 +1,3 @@
-Here's a polished and well-structured README based on your input:
-
----
-
 # SonicSherlock: Audio Recognition System
 
 SonicSherlock is a Shazam-like audio recognition system built using Python, Librosa, FastAPI, Gradio, and PostgreSQL. It identifies songs from audio snippets by creating and matching audio fingerprints.
