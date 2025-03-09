@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, HTTPException, status
 from fastapi.responses import JSONResponse
+import io  # ADDED
+import random
 
 from audio import processing
 from audio import fingerprinting
@@ -7,6 +9,7 @@ from database.database_manager import DatabaseManager
 from api import schemas
 from matching import matcher
 from utils.logger import logger
+from config import config
 
 app = FastAPI()
 db_manager = DatabaseManager()
@@ -34,9 +37,10 @@ async def recognize_audio(file: UploadFile):
     logger.info("api.app.recognize_audio :: Received audio recognition request")
     try:
         # Load audio
-        audio, sr = processing.load_audio(
-            file.file
-        )  # Pass file.file (the SpooledTemporaryFile)
+        import io  # ADDED
+
+        audio_bytes = await file.read()  # Read audio bytes from SpooledTemporaryFile
+        audio, sr = processing.load_audio(io.BytesIO(audio_bytes))
         if audio is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid audio file"
@@ -57,6 +61,13 @@ async def recognize_audio(file: UploadFile):
         fingerprints = fingerprinting.create_fingerprint(
             peaks, song_id=0
         )  # Use a dummy song_id for recognition
+
+        # Limit the number of fingerprints to use for matching
+        if len(fingerprints) > config.NUM_FINGERPRINTS_TO_USE:
+            fingerprints = random.sample(fingerprints, config.NUM_FINGERPRINTS_TO_USE)
+            logger.debug(
+                f"api.app.recognize_audio :: Limited fingerprints to {config.NUM_FINGERPRINTS_TO_USE}"
+            )
 
         # Match fingerprints
         matches = matcher.match_fingerprints(fingerprints)

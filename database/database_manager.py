@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text  # Import the text function
 
 from config import config
 from utils.logger import logger
@@ -115,25 +116,25 @@ class DatabaseManager:
         finally:
             session.close()
 
-    def get_fingerprints_by_hash(self, hash_value):
-        """Retrieves fingerprints from the database by their hash value.
+    def get_fingerprints_by_hash(self, hash_values):
+        """Retrieves fingerprints from the database by their hash values.
 
         Args:
-            hash_value (str): The hash value to search for.
+            hash_values (list): A list of hash values to search for.
 
         Returns:
-            list: A list of Fingerprint objects matching the hash value.
+            list: A list of Fingerprint objects matching the hash values.
         """
         logger.debug(
-            f"database.database_manager.DatabaseManager :: Retrieving fingerprints with hash: {hash_value}"
+            f"database.database_manager.DatabaseManager :: Retrieving fingerprints with {len(hash_values)} hashes"
         )
         session = self.Session()
         try:
-            fingerprints = (
-                session.query(Fingerprint).filter(Fingerprint.hash == hash_value).all()
-            )
+            # Construct the query using SQLAlchemy's text function
+            query = session.query(Fingerprint).filter(Fingerprint.hash.in_(hash_values))
+            fingerprints = query.all()
             logger.debug(
-                f"database.database_manager.DatabaseManager :: Found {len(fingerprints)} fingerprints with hash {hash_value}"
+                f"database.database_manager.DatabaseManager :: Found {len(fingerprints)} fingerprints"
             )
             return fingerprints
         except Exception as e:
