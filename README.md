@@ -4,7 +4,7 @@ SonicSherlock is a Shazam-like audio recognition system built using Python, Libr
 
 ## Demo Video
 
-[![SonicSherlock Demo](https://github.com/himudigonda/SonicSherlock/blob/main/assets/demo-thumbnail.jpg)](https://youtu.be/SC_rsnGM6ak)
+[![SonicSherlock Demo](./assets/demo-thumbnail.png)](https://youtu.be/SC_rsnGM6ak)
 [Watch Demo on YouTube](https://youtu.be/SC_rsnGM6ak)
 
 ## Table of Contents
